@@ -12,6 +12,7 @@ public class TileMangager {
     public Tile[] tiles;
     public int mapTileNum[][];
 
+
     public TileMangager(GamePanel gp) {
         this.gp = gp;
         tiles = new Tile[10];

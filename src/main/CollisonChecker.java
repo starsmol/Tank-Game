@@ -1,6 +1,11 @@
 package main;
 
+import entity.EnemyRed;
 import entity.Entity;
+import entity.Player;
+import projectile.BasicBullet;
+import projectile.Projectile;
+import projectile.ProjectileMenager;
 
 public class CollisonChecker {
 
@@ -69,7 +74,6 @@ public class CollisonChecker {
         entityRightCol = entityRightWorldX/gp.tileSize;
         entityTopRow = entityTopWorldY/gp.tileSize;
         entityBottomRow = entityBottomWorldY/gp.tileSize;
-
         if(entity.isMovingRight) {
             entityRightCol = (entityRightWorldX + entity.speed) / gp.tileSize;
             tileNum1 = gp.tileM.mapTileNum[entityBottomRow][entityRightCol];
@@ -83,6 +87,38 @@ public class CollisonChecker {
 
 
 
+    }
+    public void RedEBulletCol(EnemyRed RedE, ProjectileMenager projectileM) {
+        if(projectileM.playerBullet.size() > 0) {
+            for (int i = 0; i < projectileM.playerBullet.size(); i++) {
+                BasicBullet bullet = projectileM.playerBullet.get(i);
+                int dX = Math.abs(bullet.x - RedE.x);
+                int dY = Math.abs(bullet.y - RedE.y);
+
+                if (dY < 100 && dX < 100) {
+                    if (dY * dY + dX * dX <= (bullet.radius * bullet.radius) + (RedE.gp.tileSize * RedE.gp.tileSize / 4)) {
+                        RedE.isHit();
+                        projectileM.playerBullet.remove(i);
+                    }
+                }
+            }
+        }
+    }
+    public void PlayerBullerCol(Player player, ProjectileMenager projectileM) {
+        if(projectileM.playerBullet.size() > 0) {
+            for (int i = 0; i < projectileM.playerBullet.size(); i++) {
+                BasicBullet bullet = projectileM.playerBullet.get(i);
+                int dX = Math.abs(bullet.x - player.x);
+                int dY = Math.abs(bullet.y - player.y);
+
+                if (dY < 100 && dX < 100) {
+                    if (dY * dY + dX * dX <= (bullet.radius * bullet.radius) + (player.gp.tileSize * player.gp.tileSize / 4)) {
+                        player.isHit();
+                        projectileM.playerBullet.remove(i);
+                    }
+                }
+            }
+        }
     }
 
 }

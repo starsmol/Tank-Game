@@ -2,7 +2,9 @@ package entity;
 
 import main.GamePanel;
 import main.KeyHandler;
-
+import main.MouseHandler;
+import projectile.Projectile;
+import projectile.ProjectileMenager;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -11,16 +13,23 @@ import java.io.IOException;
 
 public class Player extends Entity {
 
-    GamePanel gp;
+    public GamePanel gp;
     KeyHandler keyH;
-
-    public  Player(GamePanel gp, KeyHandler keyH) {
+    MouseHandler mouseH;
+    public ProjectileMenager projectileM;
+    int fireSpeed;
+    int fireCount;
+    int health;
+    public  Player(GamePanel gp, KeyHandler keyH, MouseHandler mouseH) {
         this.gp = gp;
         this.keyH = keyH;
-
+        this.mouseH = mouseH;
+        projectileM = new ProjectileMenager(gp);
         setDefaultValues();
         getPlayerImage();
-
+        this.fireSpeed = 5;
+        this.fireCount = 0;
+        this.health = 100;
         solidArea = new Rectangle(0, 0, gp.tileSize, gp.tileSize);
 
     }
@@ -30,6 +39,11 @@ public class Player extends Entity {
         y = 100;
         speed = 4;
 
+    }
+
+    public void isHit()
+    {
+        this.health -= 10;
     }
 
 
@@ -76,6 +90,17 @@ public class Player extends Entity {
             isMovingRight = true;
         }
 
+        this.fireCount++;
+        if(keyH.firePressed && gp.FPS / this.fireSpeed < this.fireCount )
+        {
+            int velX = mouseH.mouseX - this.x;
+            int velY = mouseH.mouseY - this.y;
+            boolean goingUp = (velY >= 0);
+            boolean goingLeft = (velX >= 0);
+            projectileM.add(this.x + solidArea.width/2, this.y + solidArea.height/2, velX/velY,goingUp, goingLeft, "Player");
+            this.fireCount = 0;
+        }
+
 
         gp.cChecker.checkTile(this);
 
@@ -92,7 +117,15 @@ public class Player extends Entity {
             x += speed;
         }
 
+        projectileM.update();
 
+    }
+    public void drawHealthBar(Graphics g2) {
+        g2.setColor(Color.RED);
+        g2.fillRect(x, y-8, gp.tileSize, 4);
+        g2.setColor(Color.GREEN);
+        int healthBarWidth = gp.tileSize * this.health / 100;
+        g2.fillRect(x, y-8, healthBarWidth, 4);
     }
 
     public void draw(Graphics g2) {
@@ -101,9 +134,9 @@ public class Player extends Entity {
 
         BufferedImage image = null;
         image = img;
-
         g2.drawImage(image, x, y, gp.tileSize, gp.tileSize, null);
-
+        drawHealthBar(g2);
+        projectileM.draw(g2);
     }
 
 }

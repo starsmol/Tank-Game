@@ -1,10 +1,14 @@
 package main;
 
+import entity.EnemyRed;
 import entity.Player;
+import projectile.BasicBullet;
+import projectile.ProjectileMenager;
 import tiles.TileMangager;
 
 import javax.swing.*;
 import java.awt.*;
+import main.MouseHandler;
 
 public class GamePanel extends JPanel implements Runnable {
 
@@ -19,12 +23,14 @@ public class GamePanel extends JPanel implements Runnable {
     final int SCREEN_HEIGHT = maxScreenRow * tileSize;
 
     //FPS
-    int FPS = 60;
+    public int FPS = 60;
 
     TileMangager tileM = new TileMangager(this);
     Thread gameThread;
     KeyHandler keyH = new KeyHandler();
-    public Player player = new Player(this, keyH);
+    MouseHandler mouseH = new MouseHandler();
+    public Player player = new Player(this, keyH, mouseH);
+    public EnemyRed redE = new EnemyRed(this, player);
     public CollisonChecker cChecker = new CollisonChecker(this);
 
 
@@ -33,6 +39,8 @@ public class GamePanel extends JPanel implements Runnable {
         this.setBackground(Color.BLACK);
         this.setDoubleBuffered(true);
         this.addKeyListener(keyH);
+        this.addMouseListener(mouseH);
+        this.addMouseMotionListener(mouseH);
         this.setFocusable(true);
     }
 
@@ -66,7 +74,9 @@ public class GamePanel extends JPanel implements Runnable {
 
     public void update() {
         player.update();
-
+        redE.update();
+        cChecker.RedEBulletCol(redE, player.projectileM);
+        cChecker.PlayerBullerCol(player, redE.projectileM);
 
     }
 
@@ -77,6 +87,7 @@ public class GamePanel extends JPanel implements Runnable {
 
         tileM.draw(g2);
         player.draw(g2);
+        redE.draw(g2);
         g2.dispose();
 
     }
