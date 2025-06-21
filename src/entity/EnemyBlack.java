@@ -10,8 +10,9 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
-public class EnemyRed extends Entity {
+public class EnemyBlack extends Entity {
     int health;
     boolean dead;
     public GamePanel gp;
@@ -27,13 +28,19 @@ public class EnemyRed extends Entity {
     private int targetX ;
     private int targetY ;
     private double speed = 2.0;
+    private int randomiserTimer;
+    Random rand = new Random();
 
-    public EnemyRed(GamePanel gp, Player player) {
+
+    int goalY ;
+    int goalX ;
+
+    public EnemyBlack(GamePanel gp, Player player) {
         this.gp = gp;
         health = 100;
-        this.x = 400;
-        this.y = 400;
-        this.speed = 2.0;
+        this.x = 10*gp.tileSize;
+        this.y = 16*gp.tileSize;
+        this.speed = 2;
         this.mapTileNum = new int[gp.maxScreenRow][gp.maxScreenColumn];
         loadMap();
         this.fireSpeed = 30;
@@ -42,6 +49,10 @@ public class EnemyRed extends Entity {
         path = new ArrayList<int[]>();
         projectileM = new ProjectileMenager(gp);
         this.solver = new MazeSolver();
+        this.randomiserTimer = 0;
+
+        int goalY = 2;
+        int goalX = 2;
 
 
     }
@@ -89,11 +100,26 @@ public class EnemyRed extends Entity {
 
 
     }
+
+    private void randomiseDirection(){
+        int x, y;
+        y = rand.nextInt(gp.maxScreenRow);
+        x = rand.nextInt(gp.maxScreenColumn);
+        while (mapTileNum[y][x] == 0){
+            y = rand.nextInt(gp.maxScreenRow);
+            x = rand.nextInt(gp.maxScreenColumn);
+        }
+        this.goalX = x;
+        this.goalY = y;
+
+        System.out.println("Randomiser Goal X: "+this.goalX+" Goal Y: "+this.goalY);
+    }
+
     private void move()
-    {int startX = this.x / gp.tileSize;
+    {
+
+        int startX = this.x / gp.tileSize;
         int startY = this.y / gp.tileSize;
-        int goalY = player.y / gp.tileSize;
-        int goalX = player.x / gp.tileSize;
 
 
 
@@ -126,8 +152,14 @@ public class EnemyRed extends Entity {
         this.updateCounter++;
         if (updateCounter >= 60){
             updateCounter = 0;
+            this.randomiserTimer++;
         }
         if(!dead) {
+            if (this.randomiserTimer >= 8){
+                randomiseDirection();
+                this.randomiserTimer = 0;
+            }
+
             if (health <= 0)
                 dead = true;
 
@@ -139,6 +171,7 @@ public class EnemyRed extends Entity {
             }
             if (this.updateCounter%2 == 0) {
                 move();
+
             }
 
             projectileM.update();
@@ -147,7 +180,7 @@ public class EnemyRed extends Entity {
 
     public void draw(Graphics g2) {
         if(!dead) {
-            g2.setColor(Color.RED);
+            g2.setColor(Color.BLACK);
             g2.fillRect(x, y, gp.tileSize, gp.tileSize);
             g2.setColor(Color.GREEN);
             int hp_width = gp.tileSize * this.health / 100;

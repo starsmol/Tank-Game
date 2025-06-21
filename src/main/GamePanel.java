@@ -1,5 +1,6 @@
 package main;
 
+import entity.EnemyBlack;
 import entity.EnemyRed;
 import entity.Player;
 import projectile.BasicBullet;
@@ -25,12 +26,13 @@ public class GamePanel extends JPanel implements Runnable {
     //FPS
     public int FPS = 60;
 
-    TileMangager tileM = new TileMangager(this);
+    public TileMangager tileM = new TileMangager(this);
     Thread gameThread;
     KeyHandler keyH = new KeyHandler();
     MouseHandler mouseH = new MouseHandler();
     public Player player = new Player(this, keyH, mouseH);
     public EnemyRed redE = new EnemyRed(this, player);
+    public EnemyBlack blackE = new EnemyBlack(this, player);
     public CollisonChecker cChecker = new CollisonChecker(this);
 
 
@@ -64,7 +66,11 @@ public class GamePanel extends JPanel implements Runnable {
             lastTime = currentTime;
 
             if (delta >= 1) {
-                update();
+                try {
+                    update();
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
                 repaint();
                 delta--;
             }
@@ -72,9 +78,10 @@ public class GamePanel extends JPanel implements Runnable {
         }
     }
 
-    public void update() {
+    public void update() throws InterruptedException {
         player.update();
         redE.update();
+        blackE.update();
         cChecker.RedEBulletCol(redE, player.projectileM);
         cChecker.PlayerBullerCol(player, redE.projectileM);
 
@@ -88,6 +95,7 @@ public class GamePanel extends JPanel implements Runnable {
         tileM.draw(g2);
         player.draw(g2);
         redE.draw(g2);
+        blackE.draw(g2);
         g2.dispose();
 
     }
