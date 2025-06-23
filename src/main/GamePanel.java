@@ -3,13 +3,10 @@ package main;
 import entity.EnemyBlack;
 import entity.EnemyRed;
 import entity.Player;
-import projectile.BasicBullet;
-import projectile.ProjectileMenager;
 import tiles.TileMangager;
 
 import javax.swing.*;
 import java.awt.*;
-import main.MouseHandler;
 
 public class GamePanel extends JPanel implements Runnable {
 
@@ -28,12 +25,20 @@ public class GamePanel extends JPanel implements Runnable {
 
     public TileMangager tileM = new TileMangager(this);
     Thread gameThread;
-    KeyHandler keyH = new KeyHandler();
+    KeyHandler keyH = new KeyHandler(this);
     MouseHandler mouseH = new MouseHandler();
     public Player player = new Player(this, keyH, mouseH);
     public EnemyRed redE = new EnemyRed(this, player);
     public EnemyBlack blackE = new EnemyBlack(this, player);
     public CollisonChecker cChecker = new CollisonChecker(this);
+    public UI ui = new UI(this);
+
+    // GAME STATE
+    public int gameState = 3;
+    public final int playState = 1;
+    public final int pauseState = 2;
+    public final int mainTitleState = 3;
+    public final  int gameOverState = 4;
 
 
     public GamePanel() {
@@ -79,12 +84,24 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     public void update() throws InterruptedException {
-        player.update();
-        redE.update();
-        blackE.update();
-        cChecker.RedEBulletCol(redE, player.projectileM);
-        cChecker.PlayerBullerCol(player, redE.projectileM);
+        if (gameState == playState){
+            player.update();
+            redE.update();
+            blackE.update();
+            cChecker.RedEBulletCol(redE, player.projectileM);
+            cChecker.PlayerBullerCol(player, redE.projectileM);
+            cChecker.PlayerBullerCol(player, blackE.projectileM);
 
+            if (player.getHealth() <= 0) {
+                gameState = gameOverState;
+            }
+        }
+    }
+
+    public void resetGame() {
+        player.reset();
+        redE.reset();
+        blackE.reset();
     }
 
     public void paintComponent(Graphics g) {
@@ -92,12 +109,32 @@ public class GamePanel extends JPanel implements Runnable {
         Graphics2D g2 = (Graphics2D) g;
 
 
-        tileM.draw(g2);
-        player.draw(g2);
-        redE.draw(g2);
-        blackE.draw(g2);
-        g2.dispose();
+        if (gameState == playState){
+            tileM.draw(g2);
+            player.draw(g2);
+            redE.draw(g2);
+            blackE.draw(g2);
+        } else if (gameState == pauseState){
+            tileM.draw(g2);
+            player.draw(g2);
+            redE.draw(g2);
+            blackE.draw(g2);
+            ui.drawPause(g2);
+        } else if (gameState == mainTitleState){
+            ui.drawMainTitle(g2);
+        } else if (gameState == gameOverState){
+            tileM.draw(g2);
+            player.draw(g2);
+            redE.draw(g2);
+            blackE.draw(g2);
+            ui.drawEndGameScreen(g2);
+        }
 
+
+
+
+
+        g2.dispose();
     }
 
 

@@ -189,4 +189,19 @@ public class EnemyBlack extends Entity {
             projectileM.draw(g2);
         }
     }
+
+    public void reset() {
+        this.health = 100;
+        this.dead = false;
+        this.x = 10 * gp.tileSize;
+        this.y = 16 * gp.tileSize;
+        this.updateCounter = 0;
+        this.randomiserTimer = 0;
+        this.projectileM.clear();     // Wymaga metody clear() w ProjectileMenager
+        this.targetX = player.x;
+        this.targetY = player.y;
+        this.goalX = 2;
+        this.goalY = 2;
+        this.path.clear();
+    }
 }

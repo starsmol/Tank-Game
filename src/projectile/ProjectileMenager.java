@@ -44,4 +44,7 @@ public class ProjectileMenager {
             bullet.draw(g2);
         }
     }
+    public void clear() {
+        playerBullet.clear();
+    }
 }

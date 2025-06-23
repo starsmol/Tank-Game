@@ -139,4 +139,15 @@ public class Player extends Entity {
         projectileM.draw(g2);
     }
 
+    public void reset() {
+        setDefaultValues();           // Ustaw domyślne pozycje i prędkość
+        this.health = 100;            // Przywróć pełne zdrowie
+        this.fireCount = 0;           // Zresetuj licznik strzałów
+        this.projectileM.clear();     // Wyczyść wszystkie pociski gracza
+        clearMovementAndCollision(); // Wyzeruj kierunki ruchu i kolizje
+    }
+
+    public int getHealth() {
+        return health;
+    }
 }

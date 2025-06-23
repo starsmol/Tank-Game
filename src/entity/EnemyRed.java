@@ -156,4 +156,16 @@ public class EnemyRed extends Entity {
             projectileM.draw(g2);
         }
     }
+
+    public void reset() {
+        this.health = 100;                  // Pełne zdrowie
+        this.dead = false;                  // Wróg znów "żyje"
+        this.x = 400;                       // Pozycja startowa
+        this.y = 400;
+        this.updateCounter = 0;            // Reset licznika aktualizacji
+        this.projectileM.clear();          // Wyczyść pociski
+        this.targetX = player.x;           // Resetuj cele
+        this.targetY = player.y;
+        this.path.clear();                 // Wyczyść aktualną ścieżkę (jeśli używana)
+    }
 }
