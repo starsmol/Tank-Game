@@ -131,6 +131,8 @@ public class KeyHandler implements KeyListener {
                 gp.resetGame();
                 gp.gameState = gp.playState;
             } else if (gp.ui.titleCommandNumber == gp.ui.exitCommandNum) {
+                gp.redE.stopEnemy();
+                gp.blackE.stopEnemy();
                 System.exit(0);
             }
         }

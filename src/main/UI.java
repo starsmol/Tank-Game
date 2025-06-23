@@ -84,6 +84,13 @@ public class UI {
         // draw inside box
         g2.drawString("GameOver!", x*6, y+gp.tileSize*3);
 
+        if (gp.player.getHealth() > 0){
+            g2.drawString("You WON! :)", x*6, y+gp.tileSize*5);
+        } else {
+            g2.drawString("You lose :(", x*6, y+gp.tileSize*5);
+        }
+
+
         g2.setFont(g2.getFont().deriveFont(48f));
 
         g2.drawString("Restart", centerX, y+gp.tileSize*8);

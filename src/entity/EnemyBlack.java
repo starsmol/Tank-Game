@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class EnemyBlack extends Entity {
+public class EnemyBlack extends Entity implements Runnable {
     int health;
     boolean dead;
     public GamePanel gp;
@@ -35,6 +35,9 @@ public class EnemyBlack extends Entity {
     int goalY ;
     int goalX ;
 
+    private Thread enemyThread;
+    private volatile boolean running;
+
     public EnemyBlack(GamePanel gp, Player player) {
         this.gp = gp;
         health = 100;
@@ -54,8 +57,34 @@ public class EnemyBlack extends Entity {
         int goalY = 2;
         int goalX = 2;
 
-
+        running = true;
+        enemyThread = new Thread(this, "EnemyBlackThread");
+        enemyThread.start();
     }
+
+    @Override
+    public void run() {
+        while (running) {
+            try {
+                if (gp.gameState == gp.playState) {
+                    update();
+                }
+                Thread.sleep(16); // ~60 FPS
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void stopEnemy() {
+        running = false;
+        try {
+            enemyThread.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void isHit()
     {
         this.health -= 10;
@@ -203,5 +232,9 @@ public class EnemyBlack extends Entity {
         this.goalX = 2;
         this.goalY = 2;
         this.path.clear();
+    }
+
+    public int getHealth() {
+        return health;
     }
 }

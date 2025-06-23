@@ -11,7 +11,7 @@ import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EnemyRed extends Entity {
+public class EnemyRed extends Entity implements Runnable {
     int health;
     boolean dead;
     public GamePanel gp;
@@ -27,6 +27,8 @@ public class EnemyRed extends Entity {
     private int targetX ;
     private int targetY ;
     private double speed = 2.0;
+    private Thread enemyThread;
+    private volatile boolean running;
 
     public EnemyRed(GamePanel gp, Player player) {
         this.gp = gp;
@@ -43,8 +45,35 @@ public class EnemyRed extends Entity {
         projectileM = new ProjectileMenager(gp);
         this.solver = new MazeSolver();
 
+        running = true;
+        enemyThread = new Thread(this, "EnemyRedThread");
+        enemyThread.start();
 
     }
+
+    @Override
+    public void run() {
+        while (running) {
+            try {
+                if (gp.gameState == gp.playState) {
+                    update();
+                }
+                Thread.sleep(16); // ~60 FPS
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void stopEnemy() {
+        running = false;
+        try {
+            enemyThread.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void isHit()
     {
         this.health -= 10;
@@ -167,5 +196,9 @@ public class EnemyRed extends Entity {
         this.targetX = player.x;           // Resetuj cele
         this.targetY = player.y;
         this.path.clear();                 // Wyczyść aktualną ścieżkę (jeśli używana)
+    }
+
+    public int getHealth() {
+        return health;
     }
 }

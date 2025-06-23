@@ -86,13 +86,17 @@ public class GamePanel extends JPanel implements Runnable {
     public void update() throws InterruptedException {
         if (gameState == playState){
             player.update();
-            redE.update();
-            blackE.update();
+            //redE.update();
+            //blackE.update();
             cChecker.RedEBulletCol(redE, player.projectileM);
+            cChecker.BlackEBulletCol(blackE, player.projectileM);
             cChecker.PlayerBullerCol(player, redE.projectileM);
             cChecker.PlayerBullerCol(player, blackE.projectileM);
 
             if (player.getHealth() <= 0) {
+                gameState = gameOverState;
+            }
+            if ((redE.getHealth() <= 0) && blackE.getHealth() <= 0) {
                 gameState = gameOverState;
             }
         }

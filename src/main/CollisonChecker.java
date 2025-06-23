@@ -1,5 +1,6 @@
 package main;
 
+import entity.EnemyBlack;
 import entity.EnemyRed;
 import entity.Entity;
 import entity.Player;
@@ -98,6 +99,22 @@ public class CollisonChecker {
                 if (dY < 100 && dX < 100) {
                     if (dY * dY + dX * dX <= (bullet.radius * bullet.radius) + (RedE.gp.tileSize * RedE.gp.tileSize / 4)) {
                         RedE.isHit();
+                        projectileM.playerBullet.remove(i);
+                    }
+                }
+            }
+        }
+    }
+    public void BlackEBulletCol(EnemyBlack BlackE, ProjectileMenager projectileM) {
+        if(projectileM.playerBullet.size() > 0) {
+            for (int i = 0; i < projectileM.playerBullet.size(); i++) {
+                BasicBullet bullet = projectileM.playerBullet.get(i);
+                int dX = Math.abs(bullet.x - BlackE.x);
+                int dY = Math.abs(bullet.y - BlackE.y);
+
+                if (dY < 100 && dX < 100) {
+                    if (dY * dY + dX * dX <= (bullet.radius * bullet.radius) + (BlackE.gp.tileSize * BlackE.gp.tileSize / 4)) {
+                        BlackE.isHit();
                         projectileM.playerBullet.remove(i);
                     }
                 }
